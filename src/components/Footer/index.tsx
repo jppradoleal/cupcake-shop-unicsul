@@ -23,7 +23,7 @@ export default function Footer() {
         >
           Cupcake Shop
         </Text>
-        <Text>© 2022 Chakra Templates. All rights reserved</Text>
+        <Text>© 2023 Cupcake Shop. Todos os direitos reservados</Text>
       </Container>
     </Box>
   );

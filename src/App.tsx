@@ -1,12 +1,15 @@
 import { ChakraProvider } from "@chakra-ui/react"
 import { BrowserRouter } from "react-router-dom"
 import { Router } from "./Router"
+import UserContextProvider from "./contexts/userContext"
 
 function App() {
   return (
     <ChakraProvider>
       <BrowserRouter>
-        <Router />
+        <UserContextProvider>
+          <Router />
+        </UserContextProvider>
       </BrowserRouter>
     </ChakraProvider>
   )

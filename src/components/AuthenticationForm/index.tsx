@@ -2,43 +2,92 @@
 
 import {
   Button,
-  Checkbox,
   Flex,
-  Text,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
+  Image,
   Input,
   Stack,
-  Image,
+  Text,
 } from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email().min(1, { message: "Email obrigatório" }),
+  password: z
+    .string()
+    .min(8, { message: "Senha deve ter no mínimo 12 caracteres" }),
+});
+
+const registerSchema = loginSchema
+  .extend({
+    confirmPassword: z.string(),
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (!(confirmPassword === password)) {
+      ctx.addIssue({
+        path: ["confirmPassword"],
+        code: "custom",
+        message: "As senhas não coincidem",
+      });
+    }
+  });
+
+export type UserData = z.infer<typeof registerSchema>;
 
 interface AuthenticationProps {
   isRegister?: boolean;
+  onSubmit: (data: UserData) => Promise<void>;
 }
 
 export default function AuthenticationForm({
   isRegister,
+  onSubmit,
 }: AuthenticationProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserData>({
+    resolver: zodResolver(isRegister ? registerSchema : loginSchema),
+  });
+
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={4} w={"full"} maxW={"md"}>
             <Heading fontSize={"4xl"}>
-                { isRegister ? "Cadastrar sua conta" : "Acessar sua conta" }</Heading>
-            <FormControl id="email">
+              {isRegister ? "Cadastrar sua conta" : "Acessar sua conta"}
+            </Heading>
+            <FormControl id="email" isInvalid={!!errors.email}>
               <FormLabel>Email</FormLabel>
-              <Input type="email" name="email" />
+              <Input type="email" {...register("email")} />
+              <FormErrorMessage>
+                {errors.email?.message?.toString()}
+              </FormErrorMessage>
             </FormControl>
-            <FormControl id="password">
+            <FormControl id="password" isInvalid={!!errors.password}>
               <FormLabel>Senha</FormLabel>
-              <Input type="password" name="password" />
+              <Input type="password" {...register("password")} />
+              <FormErrorMessage>
+                {errors.password?.message?.toString()}
+              </FormErrorMessage>
             </FormControl>
             {isRegister && (
-              <FormControl id="password">
+              <FormControl
+                id="confirmPassword"
+                isInvalid={!!errors.confirmPassword}
+              >
                 <FormLabel>Confirmar senha</FormLabel>
-                <Input type="password" name="password" />
+                <Input type="password" {...register("confirmPassword")} />
+                <FormErrorMessage>
+                  {errors.confirmPassword?.message?.toString()}
+                </FormErrorMessage>
               </FormControl>
             )}
             <Stack spacing={6}>
@@ -48,12 +97,11 @@ export default function AuthenticationForm({
                   align={"start"}
                   justify={"space-between"}
                 >
-                  <Checkbox>Lembrar de mim</Checkbox>
                   <Text color={"blue.500"}>Esqueci minha senha</Text>
                 </Stack>
               )}
-              <Button colorScheme={"blue"} variant={"solid"}>
-                { isRegister ? "Cadastrar" : "Acessar" }
+              <Button colorScheme={"blue"} variant={"solid"} type="submit">
+                {isRegister ? "Cadastrar" : "Acessar"}
               </Button>
             </Stack>
           </Stack>

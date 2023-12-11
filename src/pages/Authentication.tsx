@@ -1,8 +1,9 @@
 import { Container, useToast } from "@chakra-ui/react";
-import AuthenticationForm, { UserData } from "../components/AuthenticationForm";
+import AuthenticationForm from "../components/AuthenticationForm";
 import supabase from "../supabase";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { UserData } from "../schemas/auth.schema";
 
 interface AuthenticationProps {
   isRegister?: boolean;

@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { DefaultLayout } from "./layouts/DefaultLayout";
 import Home from "./pages/Home";
 import Authentication from "./pages/Authentication";
+import Cart from "./pages/Cart";
 
 export function Router() {
   return (
@@ -10,6 +11,7 @@ export function Router() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Authentication />} />
         <Route path="/register" element={<Authentication isRegister />} />
+        <Route path="/cart" element={<Cart />} />
       </Route>
     </Routes>
   )

@@ -75,6 +75,22 @@ export default function Header() {
               fontWeight={600}
               color={"white"}
               bg={"pink.400"}
+              to={"/registrar"}
+              _hover={{
+                bg: "pink.300",
+              }}
+            >
+              Registrar
+            </Button>
+          )}
+          {!isAuthenticated && (
+            <Button
+              as={ReactRouterLink}
+              display={{ base: "none", md: "inline-flex" }}
+              fontSize={"sm"}
+              fontWeight={600}
+              color={"white"}
+              bg={"pink.400"}
               to={"/acessar"}
               _hover={{
                 bg: "pink.300",

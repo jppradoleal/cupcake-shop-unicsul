@@ -1,5 +1,6 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
 import supabase from "../supabase";
+import { useNavigate } from "react-router-dom";
 
 type UserContextType = {
   sessionToken?: string;
@@ -14,6 +15,7 @@ export const UserContext = createContext<UserContextType>({
 
 const UserContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessionToken, setSessionToken] = useState<string | undefined>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth
@@ -29,6 +31,7 @@ const UserContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   async function logOut() {
     setSessionToken("");
     await supabase.auth.signOut();
+    navigate("/")
   }
 
   return (

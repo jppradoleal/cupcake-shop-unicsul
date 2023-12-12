@@ -75,7 +75,7 @@ export default function Header() {
               fontWeight={600}
               color={"white"}
               bg={"pink.400"}
-              to={"/login"}
+              to={"/acessar"}
               _hover={{
                 bg: "pink.300",
               }}
@@ -189,6 +189,10 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Carrinho",
-    href: "/cart",
+    href: "/carrinho",
+  },
+  {
+    label: "Pedidos",
+    href: "/pedidos",
   },
 ];

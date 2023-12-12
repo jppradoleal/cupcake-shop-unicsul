@@ -5,7 +5,7 @@ import {
   FormErrorMessage,
   Heading,
   Input,
-  Link,
+  Link as ChakraLink,
   Stack,
   Text,
   useColorModeValue as mode,
@@ -13,6 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import { FaArrowRight } from "react-icons/fa";
 import { formatPrice } from "../../utils/price";
+import { Link as ReactRouterLink } from "react-router-dom"
 
 type OrderSummaryItemProps = {
   label: string;
@@ -69,14 +70,14 @@ export const CartOrderSummary = ({
       <Stack spacing="6">
         <OrderSummaryItem label="Subtotal" value={formatPrice(total)} />
         <OrderSummaryItem label="Frete + taxas">
-          <Link href="#" textDecor="underline">
+          <ChakraLink as={ReactRouterLink} to="" textDecor="underline">
             Calcular o frete
-          </Link>
+          </ChakraLink>
         </OrderSummaryItem>
         <OrderSummaryItem label="Código do cupom">
-          <Link href="#" textDecor="underline">
+          <ChakraLink as={ReactRouterLink} to="" textDecor="underline">
             Adicionar cupom
-          </Link>
+          </ChakraLink>
         </OrderSummaryItem>
         <Flex justify="space-between">
           <Text fontSize="lg" fontWeight="semibold">

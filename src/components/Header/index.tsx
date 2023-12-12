@@ -13,6 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import useAuth from "../../hooks/useAuth";
+import { Link as ReactRouterLink } from "react-router-dom"
 
 export default function Header() {
   const { isOpen, onToggle } = useDisclosure();
@@ -68,13 +69,13 @@ export default function Header() {
         >
           {!isAuthenticated && (
             <Button
-              as={"a"}
+              as={ReactRouterLink}
               display={{ base: "none", md: "inline-flex" }}
               fontSize={"sm"}
               fontWeight={600}
               color={"white"}
               bg={"pink.400"}
-              href={"/login"}
+              to={"/login"}
               _hover={{
                 bg: "pink.300",
               }}
@@ -118,9 +119,9 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <Box
-              as="a"
+              as={ReactRouterLink}
               p={2}
-              href={navItem.href ?? "#"}
+              to={navItem.href ?? "#"}
               fontSize={"sm"}
               fontWeight={500}
               color={linkColor}
@@ -154,8 +155,6 @@ const MobileNav = () => {
 
 interface NavItem {
   label: string;
-  subLabel?: string;
-  children?: Array<NavItem>;
   href?: string;
 }
 

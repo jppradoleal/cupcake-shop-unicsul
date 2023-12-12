@@ -1,5 +1,6 @@
 import { HStack, StackProps, Text, TextProps, useColorModeValue as mode } from '@chakra-ui/react'
 import { ReactNode } from 'react'
+import { formatPrice } from '../../utils/price'
 
 interface PriceTagProps {
   price: number
@@ -7,15 +8,6 @@ interface PriceTagProps {
   rootProps?: StackProps
   priceProps?: TextProps
   salePriceProps?: TextProps
-}
-
-function formatPrice(value: number) {
-  const formatter = new Intl.NumberFormat('pt-BR', {
-    currency: 'BRL',
-    style: 'currency',
-    maximumFractionDigits: 2,
-  })
-  return formatter.format(value)
 }
 
 export const PriceTag = (props: PriceTagProps) => {

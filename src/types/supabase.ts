@@ -44,21 +44,32 @@ export interface Database {
           address: string
           created_at: string
           id: number
+          owner: string | null
           status: string
         }
         Insert: {
           address: string
           created_at?: string
           id?: number
+          owner?: string | null
           status?: string
         }
         Update: {
           address?: string
           created_at?: string
           id?: number
+          owner?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "Order_owner_fkey"
+            columns: ["owner"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       "Order-Item": {
         Row: {

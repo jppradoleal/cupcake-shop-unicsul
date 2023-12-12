@@ -9,6 +9,7 @@ import {
   StackProps,
   Text,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { PriceTag } from "./PriceTag";
 import { Rating } from "./Rating";
@@ -22,12 +23,19 @@ interface Props {
 }
 
 export const ProductCard = (props: Props) => {
-  const { dispatch } = useCart()
+  const toast = useToast();
+  const { dispatch } = useCart();
   const { product, rootProps } = props;
   const { name, image, price } = product;
 
   function handleAddToCart() {
-    dispatch({ type: CartActionKind.ADD, payload: product })
+    toast({
+      title: `${name} adicionado ao carrinho.`,
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+    dispatch({ type: CartActionKind.ADD, payload: product });
   }
 
   return (
@@ -56,7 +64,7 @@ export const ProductCard = (props: Props) => {
         <HStack>
           <Rating defaultValue={5} size="sm" />
           <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
-            12 Reviews
+            12 avaliações
           </Text>
         </HStack>
       </Stack>
@@ -73,7 +81,7 @@ export const ProductCard = (props: Props) => {
             bg: "pink.300",
           }}
         >
-          Add to cart
+          Adicionar ao carrinho
         </Button>
       </Stack>
     </Stack>

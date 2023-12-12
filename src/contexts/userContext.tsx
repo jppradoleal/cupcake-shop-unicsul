@@ -4,33 +4,31 @@ import supabase from "../supabase";
 type UserContextType = {
   sessionToken?: string;
   setSessionToken: (token: string) => void;
-  logOut: () => Promise<void>
+  logOut: () => Promise<void>;
 };
 
 export const UserContext = createContext<UserContextType>({
   setSessionToken: () => {},
-  logOut: () => Promise.resolve()
+  logOut: () => Promise.resolve(),
 });
 
 const UserContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [sessionToken, setSessionToken] = useState<string | undefined>();
 
   useEffect(() => {
-    setSessionToken(localStorage.getItem("ck#session") || "");
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setSessionToken(data.session?.access_token);
+      })
+      .catch(() => {
+        setSessionToken("");
+      });
   }, []);
-
-  useEffect(() => {
-    if (!sessionToken) {
-      localStorage.removeItem("ck#session")
-      return 
-    }
-
-    localStorage.setItem("ck#session", sessionToken!);
-  }, [sessionToken]);
 
   async function logOut() {
     setSessionToken("");
-    await supabase.auth.signOut()
+    await supabase.auth.signOut();
   }
 
   return (

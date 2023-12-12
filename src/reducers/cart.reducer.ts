@@ -1,37 +1,55 @@
+import { Draft } from "immer";
 import { Tables } from "../types/supabase";
 
 export enum CartActionKind {
   ADD,
-  REMOVE
+  REMOVE,
+  UPDATE_QUANTITY,
+  CLEAR,
+}
+
+export interface CartItem extends Tables<"Cupcake"> {
+  quantity?: number;
 }
 
 export interface CartAction {
-  type: CartActionKind
-  payload: Tables<"Cupcake">
+  type: CartActionKind;
+  payload?: CartItem;
 }
 
 export interface CartState {
-  products: Tables<"Cupcake">[]
+  products: CartItem[];
 }
 
-export function cartReducer(state: CartState, action: CartAction) {
-  const { type, payload } = action
+export function cartReducer(draft: Draft<CartState>, action: CartAction) {
+  const { type, payload } = action;
+
+  const productIdx = draft.products.findIndex(
+    (product) => product.id === payload?.id
+  );
 
   switch (type) {
     case CartActionKind.ADD:
-      return {
-        ...state,
-        products: [
-          ...state.products,
-          payload
-        ]
+      if (productIdx >= 0) {
+        draft.products[productIdx].quantity =
+          (draft.products[productIdx].quantity ?? 0) + 1;
+        break;
       }
+
+      if (payload)
+        draft.products.push({ ...payload, quantity: 1 });
+      break;
     case CartActionKind.REMOVE:
-      return {
-        ...state,
-        products: state.products.filter(product => product.id !== payload.id)
+      if (productIdx >= 0) draft.products.splice(productIdx, 1);
+      break;
+    case CartActionKind.UPDATE_QUANTITY:
+      if (payload && productIdx >= 0) {
+        draft.products[productIdx].quantity = (payload.quantity ?? 0);
       }
+      break;
+    case CartActionKind.CLEAR:
+      return { products: [] }
     default:
-      return state
+      break;
   }
 }

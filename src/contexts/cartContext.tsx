@@ -1,4 +1,5 @@
-import React, { createContext, FC, ReactNode, useReducer } from "react";
+import React, { createContext, FC, ReactNode } from "react";
+import { useImmerReducer } from "use-immer";
 import { CartAction, cartReducer, CartState } from "../reducers/cart.reducer";
 
 type CartContextType = {
@@ -12,7 +13,7 @@ export const CartContext = createContext<CartContextType>({
 });
 
 const CartContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, { products: [] });
+  const [state, dispatch] = useImmerReducer(cartReducer, { products: [] });
 
   return (
     <CartContext.Provider value={{ state, dispatch }}>

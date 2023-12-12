@@ -184,6 +184,10 @@ const MobileNavItem = ({ label, href }: NavItem) => {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
+    label: "Início",
+    href: "/",
+  },
+  {
     label: "Carrinho",
     href: "/cart",
   },

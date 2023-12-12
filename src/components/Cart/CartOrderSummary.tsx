@@ -2,6 +2,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   Heading,
   Input,
   Link,
@@ -9,6 +10,7 @@ import {
   Text,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
 import { FaArrowRight } from "react-icons/fa";
 import { formatPrice } from "../../utils/price";
 
@@ -30,23 +32,38 @@ const OrderSummaryItem = (props: OrderSummaryItemProps) => {
   );
 };
 
+export interface ShippingData {
+  address: string
+  phone: string
+}
+
 interface CartOrderSummary {
-  address: string;
-  setAddress: (s: string) => void;
   total: number;
-  handleCheckout: () => void;
-  disabled: boolean
+  handleCheckout: (data: ShippingData) => Promise<void>;
+  disabled: boolean;
 }
 
 export const CartOrderSummary = ({
   total,
-  address,
-  setAddress,
   handleCheckout,
-  disabled
+  disabled,
 }: CartOrderSummary) => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<ShippingData>();
+
   return (
-    <Stack spacing="8" borderWidth="1px" rounded="lg" padding="8" width="full">
+    <Stack
+      as="form"
+      onSubmit={handleSubmit(handleCheckout)}
+      spacing="8"
+      borderWidth="1px"
+      rounded="lg"
+      padding="8"
+      width="full"
+    >
       <Heading size="md">Detalhes do pedido</Heading>
 
       <Stack spacing="6">
@@ -69,13 +86,25 @@ export const CartOrderSummary = ({
             {formatPrice(total)}
           </Text>
         </Flex>
-        <FormControl>
+        <FormControl isInvalid={!!errors.address}>
           <Input
             placeholder="Endereço"
-            value={address}
             type="text"
-            onChange={(event) => setAddress(event.target.value)}
+            {...register("address", { required: true })}
           />
+          <FormErrorMessage>
+            { errors?.address?.message?.toString() }
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.phone}>
+          <Input
+            placeholder="Telefone"
+            type="tel"
+            {...register("phone", { required: true })}
+          />
+          <FormErrorMessage>
+            { errors?.phone?.message?.toString() }
+          </FormErrorMessage>
         </FormControl>
       </Stack>
       <Button
@@ -83,11 +112,11 @@ export const CartOrderSummary = ({
         color={"white"}
         size="lg"
         fontSize="md"
-        onClick={handleCheckout}
+        type="submit"
         rightIcon={<FaArrowRight />}
         disabled={disabled}
         _disabled={{
-          bg: "pink.300"
+          bg: "pink.300",
         }}
         _hover={{
           bg: "pink.300",

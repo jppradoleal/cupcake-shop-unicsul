@@ -1,20 +1,22 @@
 import {
   Box,
+  Link as ChakraLink,
   Flex,
   HStack,
   Heading,
-  Link as ChakraLink,
   Stack,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { CartItem } from "../components/Cart/CartItem";
-import { CartOrderSummary } from "../components/Cart/CartOrderSummary";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { CartItem } from "../components/Cart/CartItem";
+import {
+  CartOrderSummary,
+  ShippingData,
+} from "../components/Cart/CartOrderSummary";
 import useCart from "../hooks/useCart";
 import { CartActionKind } from "../reducers/cart.reducer";
-import { Tables } from "../types/supabase";
 import supabase from "../supabase";
-import { useState } from "react";
+import { Tables } from "../types/supabase";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -22,25 +24,32 @@ export default function Cart() {
     state: { products },
     dispatch,
   } = useCart();
-  const [address, setAddress] = useState("");
-
   function handleDelete(product: Tables<"Cupcake">) {
     dispatch({ type: CartActionKind.REMOVE, payload: product });
   }
 
-  async function handleCheckout() {
+  function handleChangeQuantity(product: Tables<"Cupcake">, quantity: number) {
+    dispatch({
+      type: CartActionKind.UPDATE_QUANTITY,
+      payload: { ...product, quantity },
+    });
+  }
+
+  async function handleCheckout(shippingData: ShippingData) {
     const { data } = await supabase.auth.getSession();
 
     if (!data.session) {
       navigate("/login");
+      return;
     }
 
     try {
       const { data: orderData } = await supabase
         .from("Order")
         .insert({
-          address,
-          owner: data.session!.user.id,
+          address: shippingData.address,
+          phone: shippingData.phone,
+          owner_id: data.session.user.id,
           status: "PROCESSING",
         })
         .select();
@@ -50,12 +59,16 @@ export default function Cart() {
       }
 
       for (const product of products) {
-        await supabase.from("Order-Item").insert({
-          amount: 1,
-          item: product.id,
-          order: orderData[0].id,
+        await supabase.from("OrderItem").insert({
+          amount: product.quantity ?? 1,
+          item_id: product.id,
+          order_id: orderData[0].id,
         });
       }
+
+      dispatch({ type: CartActionKind.CLEAR });
+
+      navigate("/orders");
     } catch (error) {
       console.error(error);
       throw new Error("Erro ao processar o pedido");
@@ -81,10 +94,11 @@ export default function Cart() {
 
           <Stack spacing="6">
             {products.length ? (
-              products.map((item, idx) => (
+              products.map((item) => (
                 <CartItem
-                  key={`${item.id}-${idx}`}
+                  key={item.id}
                   {...item}
+                  onChangeQuantity={(qty) => handleChangeQuantity(item, qty)}
                   onClickDelete={() => handleDelete(item)}
                 />
               ))
@@ -97,10 +111,11 @@ export default function Cart() {
         <Flex direction="column" align="center" flex="1">
           <CartOrderSummary
             disabled={products.length <= 0}
-            address={address}
-            setAddress={setAddress}
             handleCheckout={handleCheckout}
-            total={products.reduce((total, item) => total + item.price, 0)}
+            total={products.reduce(
+              (total, item) => total + item.price * (item.quantity ?? 0),
+              0
+            )}
           />
           <HStack mt="6" fontWeight="semibold">
             <p>ou</p>

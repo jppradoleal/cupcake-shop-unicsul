@@ -1,15 +1,71 @@
 import {
+  Button,
   CloseButton,
   Flex,
-  Link
+  HStack,
+  Input,
+  Link,
+  useNumberInput
 } from "@chakra-ui/react";
+import { CartItem as CartItemType } from "../../reducers/cart.reducer";
 import { PriceTag } from "../ProductCard/PriceTag";
 import { CartProductMeta } from "./CartProductMeta";
-import { Tables } from "../../types/supabase";
 
 type CartItemProps = {
-  onClickDelete?: () => void;
-} & Tables<"Cupcake">;
+  onClickDelete: () => void;
+  onChangeQuantity: (quantity: number) => void;
+} & CartItemType;
+
+interface QuantitySelectProps {
+  onChange: (valueAsString: string, valueAsNumber: number) => void
+  value: number
+}
+
+const QuantitySelect = ({ onChange, value }: QuantitySelectProps) => {
+  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
+    useNumberInput({
+      step: 1,
+      defaultValue: value,
+      min: 1,
+      onChange
+    })
+
+  const inc = getIncrementButtonProps()
+  const dec = getDecrementButtonProps()
+  const input = getInputProps()
+
+  return (
+    <HStack>
+      <Button
+        display={{ base: "none", md: "inline-flex" }}
+        fontSize={"sm"}
+        fontWeight={600}
+        color={"white"}
+        bg={"pink.400"}
+        _hover={{
+          bg: "pink.300",
+        }}
+        {...dec}
+      >
+        -
+      </Button>
+      <Input maxW={24} {...input} />
+      <Button
+        display={{ base: "none", md: "inline-flex" }}
+        fontSize={"sm"}
+        fontWeight={600}
+        color={"white"}
+        bg={"pink.400"}
+        _hover={{
+          bg: "pink.300",
+        }}
+        {...inc}
+      >
+        +
+      </Button>
+    </HStack>
+  );
+};
 
 export const CartItem = (props: CartItemProps) => {
   const {
@@ -17,7 +73,9 @@ export const CartItem = (props: CartItemProps) => {
     description,
     image,
     price,
+    quantity,
     onClickDelete,
+    onChangeQuantity,
   } = props;
 
   return (
@@ -34,6 +92,12 @@ export const CartItem = (props: CartItemProps) => {
         justify="space-between"
         display={{ base: "none", md: "flex" }}
       >
+        <QuantitySelect
+          value={quantity ?? 0}
+          onChange={(_, valueAsNumber) => {
+            onChangeQuantity(valueAsNumber);
+          }}
+        />
         <PriceTag price={price} />
         <CloseButton
           aria-label={`Excluir ${name} do carrinho`}
@@ -52,6 +116,12 @@ export const CartItem = (props: CartItemProps) => {
         <Link fontSize="sm" textDecor="underline">
           Excluir
         </Link>
+        <QuantitySelect
+          value={quantity ?? 0}
+          onChange={(_, valueAsNumber) => {
+            onChangeQuantity(valueAsNumber);
+          }}
+        />
         <PriceTag price={price} />
       </Flex>
     </Flex>

@@ -44,66 +44,69 @@ export interface Database {
           address: string
           created_at: string
           id: number
-          owner: string | null
+          owner_id: string | null
+          phone: string | null
           status: string
         }
         Insert: {
           address: string
           created_at?: string
           id?: number
-          owner?: string | null
+          owner_id?: string | null
+          phone?: string | null
           status?: string
         }
         Update: {
           address?: string
           created_at?: string
           id?: number
-          owner?: string | null
+          owner_id?: string | null
+          phone?: string | null
           status?: string
         }
         Relationships: [
           {
-            foreignKeyName: "Order_owner_fkey"
-            columns: ["owner"]
+            foreignKeyName: "Order_owner_id_fkey"
+            columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]
       }
-      "Order-Item": {
+      OrderItem: {
         Row: {
           amount: number
           created_at: string
           id: number
-          item: number
-          order: number
+          item_id: number
+          order_id: number
         }
         Insert: {
           amount: number
           created_at?: string
           id?: number
-          item: number
-          order: number
+          item_id: number
+          order_id: number
         }
         Update: {
           amount?: number
           created_at?: string
           id?: number
-          item?: number
-          order?: number
+          item_id?: number
+          order_id?: number
         }
         Relationships: [
           {
-            foreignKeyName: "Order-Item_item_fkey"
-            columns: ["item"]
+            foreignKeyName: "OrderItem_item_id_fkey"
+            columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "Cupcake"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Order-Item_order_fkey"
-            columns: ["order"]
+            foreignKeyName: "OrderItem_order_id_fkey"
+            columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "Order"
             referencedColumns: ["id"]
